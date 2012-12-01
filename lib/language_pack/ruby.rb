@@ -59,6 +59,7 @@ class LanguagePack::Ruby < LanguagePack::Base
       create_database_yml
       install_binaries
       run_assets_precompile_rake_task
+      middleman_build
     end
   end
 
@@ -572,6 +573,18 @@ params = CGI.parse(uri.query || "")
       if $?.success?
         puts "Asset precompilation completed (#{"%.2f" % time}s)"
       end
+    end
+  end
+
+  def middleman_build
+    require 'benchmark'
+
+    topic "Running: middleman build"
+    time = Benchmark.realtime { pipe("env PATH=$PATH:bin bundle exec middleman build 2>&1") }
+    if $?.success?
+      puts "middleman build completed (#{"%.2f" % time}s)"
+    else
+      error "failed to middleman build."
     end
   end
 
